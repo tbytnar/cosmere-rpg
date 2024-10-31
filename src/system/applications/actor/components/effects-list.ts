@@ -104,37 +104,42 @@ export class ActorEffectsListComponent extends HandlebarsApplicationComponent<
 
     public _onInitialize(): void {
         if (this.application.isEditable) {
-            // Create context menu
-            AppContextMenu.create(
-                this as AppContextMenu.Parent,
-                'right',
-                [
-                    {
-                        name: 'GENERIC.Button.Edit',
-                        icon: 'fa-solid fa-pen-to-square',
-                        callback: (element) => {
-                            const effect = this.getEffectFromElement(element);
-                            if (!effect) return;
+            // Wait for rendering to complete so element exists
+            Hooks.once('renderActorEffectsListComponent', () => {
+                // Create context menu
+                AppContextMenu.create(
+                    this as AppContextMenu.Parent,
+                    'right',
+                    [
+                        {
+                            name: 'GENERIC.Button.Edit',
+                            icon: 'fa-solid fa-pen-to-square',
+                            callback: (element) => {
+                                const effect =
+                                    this.getEffectFromElement(element);
+                                if (!effect) return;
 
-                            void effect.sheet?.render(true);
+                                void effect.sheet?.render(true);
+                            },
                         },
-                    },
-                    {
-                        name: 'GENERIC.Button.Remove',
-                        icon: 'fa-solid fa-trash',
-                        callback: (element) => {
-                            const effect = this.getEffectFromElement(element);
-                            if (!effect) return;
+                        {
+                            name: 'GENERIC.Button.Remove',
+                            icon: 'fa-solid fa-trash',
+                            callback: (element) => {
+                                const effect =
+                                    this.getEffectFromElement(element);
+                                if (!effect) return;
 
-                            void effect.parent?.deleteEmbeddedDocuments(
-                                'ActiveEffect',
-                                [effect.id],
-                            );
+                                void effect.parent?.deleteEmbeddedDocuments(
+                                    'ActiveEffect',
+                                    [effect.id],
+                                );
+                            },
                         },
-                    },
-                ],
-                'a[data-action="toggle-effect-controls"]',
-            );
+                    ],
+                    'a[data-action="toggle-effect-controls"]',
+                );
+            });
         }
     }
 
